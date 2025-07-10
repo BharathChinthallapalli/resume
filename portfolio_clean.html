@@ -1975,7 +1975,8 @@
                 });
                 */
                 
-                // Skill tag animations
+                // Skill tag animations - REMOVED as this is now handled by GSAP timeline in initGSAPAnimations
+                /*
                 document.querySelectorAll('.skill-category').forEach(category => {
                     const observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
@@ -1994,6 +1995,7 @@
                     
                     observer.observe(category);
                 });
+                */
             }
                     handleScroll(sections, navLinks, backToTop) {
                             let current = '';
@@ -2545,24 +2547,51 @@
             
                             // Card animations
                             // Applying 'once: true' to all these card types.
+                            // MODIFIED to use a timeline for .skill-category to sequence tag animations
                             gsap.utils.toArray('.about-card, .skill-category, .project-card').forEach((card, index) => {
-                                ScrollTrigger.create({
-                                    trigger: card,
-                                    start: 'top 85%',
-                                    once: true, // <<< CRITICAL FIX for project-card, good practice for others
-                                    onEnter: () => {
-                                        gsap.from(card, {
-                                            y: 30,
+                                if (card.classList.contains('skill-category') && this.hasGSAP) {
+                                    const tl = gsap.timeline({
+                                        scrollTrigger: {
+                                            trigger: card,
+                                            start: 'top 85%',
+                                            once: true,
+                                        }
+                                    });
+
+                                    tl.from(card, {
+                                        y: 30,
+                                        opacity: 0,
+                                        duration: 0.6,
+                                        ease: "power2.out"
+                                    });
+
+                                    const skillTags = card.querySelectorAll('.skill-tag');
+                                    if (skillTags.length > 0) {
+                                        tl.from(skillTags, {
+                                            scale: 0,
                                             opacity: 0,
-                                            duration: 0.6,
-                                            // The delay might cause a slight visual jump if a card is filtered in
-                                            // and its 'once' animation was already played.
-                                            // Consider removing delay or making it conditional if card hasn't been 'seen'
-                                            delay: card.classList.contains('project-card') ? 0 : index * 0.1, // No delay for project cards if filter handles stagger
-                                            ease: "power2.out"
-                                        });
+                                            duration: 0.4,
+                                            stagger: 0.05,
+                                            ease: "back.out(1.7)"
+                                        }, "-=0.3");
                                     }
-                                });
+                                } else {
+                                    // Original animation logic for .about-card and .project-card (which already have once:true)
+                                    ScrollTrigger.create({
+                                        trigger: card,
+                                        start: 'top 85%',
+                                        once: true,
+                                        onEnter: () => {
+                                            gsap.from(card, {
+                                                y: 30,
+                                                opacity: 0,
+                                                duration: 0.6,
+                                                delay: card.classList.contains('project-card') ? 0 : index * 0.1,
+                                                ease: "power2.out"
+                                            });
+                                        }
+                                    });
+                                }
                             });
             
                             // Timeline animations
