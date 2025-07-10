@@ -1954,7 +1954,8 @@
             }
             
             startAnimations() {
-                // Intersection Observer for timeline items
+                // Intersection Observer for timeline items - REMOVED AS GSAP HANDLES THIS NOW
+                /*
                 const observerOptions = {
                     threshold: 0.1,
                     rootMargin: '0px 0px -50px 0px'
@@ -1972,6 +1973,7 @@
                 document.querySelectorAll('.timeline-item').forEach(item => {
                     observer.observe(item);
                 });
+                */
                 
                 // Skill tag animations
                 document.querySelectorAll('.skill-category').forEach(category => {
@@ -2542,16 +2544,21 @@
                             });
             
                             // Card animations
+                            // Applying 'once: true' to all these card types.
                             gsap.utils.toArray('.about-card, .skill-category, .project-card').forEach((card, index) => {
                                 ScrollTrigger.create({
                                     trigger: card,
                                     start: 'top 85%',
+                                    once: true, // <<< CRITICAL FIX for project-card, good practice for others
                                     onEnter: () => {
                                         gsap.from(card, {
                                             y: 30,
                                             opacity: 0,
                                             duration: 0.6,
-                                            delay: index * 0.1,
+                                            // The delay might cause a slight visual jump if a card is filtered in
+                                            // and its 'once' animation was already played.
+                                            // Consider removing delay or making it conditional if card hasn't been 'seen'
+                                            delay: card.classList.contains('project-card') ? 0 : index * 0.1, // No delay for project cards if filter handles stagger
                                             ease: "power2.out"
                                         });
                                     }
@@ -2559,11 +2566,15 @@
                             });
             
                             // Timeline animations
+                            // Consolidating to GSAP and using 'once: true'
                             gsap.utils.toArray('.timeline-item').forEach((item, index) => {
                                 ScrollTrigger.create({
                                     trigger: item,
                                     start: 'top 80%',
+                                    once: true, // <<< Ensure one-time trigger
                                     onEnter: () => {
+                                        // The class 'visible' triggers a CSS transition.
+                                        // GSAP is just used for the scroll trigger here.
                                         item.classList.add('visible');
                                     }
                                 });
