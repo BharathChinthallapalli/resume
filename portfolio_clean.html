@@ -535,6 +535,10 @@
             color: var(--primary);
             margin-bottom: 1rem;
         }
+
+        .about-card p {
+            color: var(--text-primary); /* Ensure paragraphs in about-cards use high-contrast text */
+        }
         
         .skill-category-title {
             font-size: 1.3rem;
@@ -554,7 +558,7 @@
         
         .skill-tag {
             background: var(--bg-secondary);
-            color: var(--text-secondary);
+    color: var(--text-primary); /* Changed from --text-secondary for better contrast */
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.8rem;
