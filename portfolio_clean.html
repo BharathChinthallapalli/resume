@@ -1979,11 +1979,13 @@ class StoryMode {
             return;
         }
 
-        if (typeof gsap === 'undefined' || typeof ScrollToPlugin === 'undefined') {
-            console.warn("GSAP or ScrollToPlugin not available. StoryMode scrolling will not work.");
+        // Check 2: GSAP (ScrollToPlugin is registered externally before instantiation)
+        if (typeof gsap === 'undefined') { // Simplified to check only for main gsap object
+            console.warn("GSAP not available. StoryMode will not initialize.");
             this.dom.startBtn.style.display = 'none';
             return;
         }
+        // We assume ScrollToPlugin was registered successfully if gsap is present.
 
         this.initEventListeners();
     }
@@ -2870,6 +2872,7 @@ class StoryMode {
                                         y: 30,
                                         opacity: 0,
                                         duration: 0.6,
+                                        delay: index * 0.05, // Re-add stagger for category boxes
                                         ease: "power2.out"
                                     });
 
